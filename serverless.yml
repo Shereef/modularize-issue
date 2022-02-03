@@ -48,12 +48,12 @@ custom:
   prune:
     automatic: true
     number: 3
-  newRelicUserKey: ${ssm:/aws/reference/secretsmanager/NewRelicAPIKey}
-  newRelic:
-    accountId: 1234566789 #dummy value
-    cloudWatchFilter: "*"
-    apiKey: ${self:custom.newRelicUserKey.NEW_RELIC_USER_KEY}
-    linkedAccount: "someaccount" #dummy value
+  # newRelicUserKey: ${ssm:/aws/reference/secretsmanager/NewRelicAPIKey}
+  # newRelic:
+  #   accountId: 1234566789 #dummy value
+  #   cloudWatchFilter: "*"
+  #   apiKey: ${self:custom.newRelicUserKey.NEW_RELIC_USER_KEY}
+  #   linkedAccount: "someaccount" #dummy value
   appSync:
     name: ${self:service}-${opt:stage, "dev"}
     authenticationType: API_KEY
