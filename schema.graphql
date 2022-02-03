@@ -1,0 +1,4 @@
+type Query @aws_api_key {
+    healthCheck: String
+    healthVersion: String
+}
