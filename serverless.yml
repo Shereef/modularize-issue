@@ -3,13 +3,13 @@ service: some-booking-service
 frameworkVersion: "^3.0.0"
 
 plugins:
-  - serverless-plugin-modularize
   - serverless-plugin-git-variables
   - serverless-prune-plugin
   - serverless-appsync-plugin
   - serverless-newrelic-lambda-layers
   - serverless-deployment-bucket
   - serverless-layers
+  - serverless-plugin-modularize
 
 package:
   patterns: # ! at the beginning = exclude otherwise include
