@@ -3,6 +3,7 @@ service: some-booking-service
 frameworkVersion: "^3.0.0"
 
 plugins:
+  - serverless-plugin-modularize
   - serverless-plugin-git-variables
   - serverless-prune-plugin
   - serverless-appsync-plugin
@@ -41,6 +42,8 @@ provider:
     ENVIRONMENT: ${self:custom.config.ENVIRONMENT}
 
 custom:
+  modularize:
+    glob: "src/**/*.module.yml" # glob pattern
   config: ${file(infrastructure/config.${opt:stage, "dev"}.yml)}
   prune:
     automatic: true
