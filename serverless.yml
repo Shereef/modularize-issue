@@ -1,12 +1,12 @@
 service: some-booking-service
 
-frameworkVersion: "^3.0.0"
+frameworkVersion: "^2.72.2"
 
 plugins:
   - serverless-plugin-git-variables
   - serverless-prune-plugin
   - serverless-appsync-plugin
-  - serverless-newrelic-lambda-layers
+  # - serverless-newrelic-lambda-layers
   - serverless-deployment-bucket
   - serverless-layers
   - serverless-plugin-modularize
