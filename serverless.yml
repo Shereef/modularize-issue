@@ -13,3 +13,7 @@ provider:
 custom:
   modularize:
     glob: "src/**/*.module.yml" # glob pattern
+
+functions:
+  healthCheck:
+    handler: dist/src/health/handler.check
