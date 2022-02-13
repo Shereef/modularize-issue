@@ -1,3 +1,0 @@
-functions:
-  healthVersion:
-    handler: dist/src/health/handler.version

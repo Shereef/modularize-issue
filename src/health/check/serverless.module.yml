@@ -1,3 +1,0 @@
-functions:
-  healthCheck:
-    handler: dist/src/health/handler.check
