@@ -1,135 +1,15 @@
 service: some-booking-service
 
-frameworkVersion: "^2.72.2"
-
 plugins:
-  - serverless-plugin-git-variables
-  - serverless-prune-plugin
-  - serverless-appsync-plugin
-  # - serverless-newrelic-lambda-layers
-  - serverless-deployment-bucket
-  - serverless-layers
   - serverless-plugin-modularize
-
-package:
-  patterns: # ! at the beginning = exclude otherwise include
-    - "!tsconfig.json"
-    - "!**/*.ts"
-    - "!**/*.yml"
-    - "!dist/**"
-    - "!package.json"
-    - "!package-lock.json"
-    - "!schema.graphql"
-    - "!README.md"
-    - "!.editorconfig"
-    - "dist/src/**"
-  excludeDevDependencies: true
 
 provider:
   name: aws
   runtime: nodejs14.x
   memorySize: 128
   timeout: 120
-  region: ${opt:region, self:custom.config.AMAZON_REGION, "us-east-1"}
-  deploymentBucket:
-    name: ${self:service}-${opt:stage, "dev"}-deployemnt-bucket
-    versioning: true
-    blockPublicAccess: true
-
-  environment:
-    AMAZON_REGION: ${self:provider.region}
-    DEVMODE: ${self:custom.config.DEVMODE}
-    ENVIRONMENT: ${self:custom.config.ENVIRONMENT}
+  region: ${opt:region, "us-east-1"}
 
 custom:
   modularize:
     glob: "src/**/*.module.yml" # glob pattern
-  config: ${file(infrastructure/config.${opt:stage, "dev"}.yml)}
-  prune:
-    automatic: true
-    number: 3
-  # newRelicUserKey: ${ssm:/aws/reference/secretsmanager/NewRelicAPIKey}
-  # newRelic:
-  #   accountId: 1234566789 #dummy value
-  #   cloudWatchFilter: "*"
-  #   apiKey: ${self:custom.newRelicUserKey.NEW_RELIC_USER_KEY}
-  #   linkedAccount: "someaccount" #dummy value
-  appSync:
-    name: ${self:service}-${opt:stage, "dev"}
-    authenticationType: API_KEY
-    apiKeys:
-      - appSyncApiKey
-    userPoolConfig:
-      awsRegion: ${self:provider.region}
-      defaultAction: ALLOW
-    schema: schema.graphql
-    logConfig:
-      loggingRoleArn: !GetAtt AppSyncLoggingServiceRole.Arn
-      level: ALL
-    dataSources:
-      - type: AWS_LAMBDA
-        name: HealthCheck
-        description: "Check the health of the service"
-        config:
-          functionName: healthCheck
-      - type: AWS_LAMBDA
-        name: HealthVersion
-        description: "Check the version of the service"
-        config:
-          functionName: healthVersion
-    mappingTemplates:
-      - dataSource: HealthCheck
-        type: Query
-        field: healthCheck
-        request: false
-        response: false
-      - dataSource: HealthVersion
-        type: Query
-        field: healthVersion
-        request: false
-        response: false
-
-resources:
-  Resources:
-    AppSyncLoggingServiceRole:
-      Type: "AWS::IAM::Role"
-      Properties:
-        RoleName: "CloudwatchLogging-${self:custom.appSync.name}-Role"
-        AssumeRolePolicyDocument:
-          Version: "2012-10-17"
-          Statement:
-            - Effect: "Allow"
-              Principal:
-                Service:
-                  - "appsync.amazonaws.com"
-              Action:
-                - "sts:AssumeRole"
-        Policies:
-          - PolicyName: "CloudwatchLogging-${self:custom.appSync.name}-Policy"
-            PolicyDocument:
-              Version: "2012-10-17"
-              Statement:
-                - Effect: "Allow"
-                  Action:
-                    - "logs:CreateLogGroup"
-                    - "logs:CreateLogStream"
-                    - "logs:PutLogEvents"
-                  Resource:
-                    - "*"
-    DynamoDbTable:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        SSESpecification:
-          SSEEnabled: true
-        TableName: ${self:custom.config.TABLE_NAME}
-        AttributeDefinitions:
-          - AttributeName: PK
-            AttributeType: S
-          - AttributeName: SortKey
-            AttributeType: S
-        KeySchema:
-          - AttributeName: PK
-            KeyType: HASH
-          - AttributeName: SortKey
-            KeyType: RANGE
-        BillingMode: PAY_PER_REQUEST
